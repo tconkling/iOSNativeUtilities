@@ -1,0 +1,2 @@
+Ensure $FLEX_HOME is set to a Flex SDK 4.6 directory, and run bin/ane_build.sh.
+If all goes well, you'll end up with dist/NativeUtils.ane and dist/NativeUtils.swc.
