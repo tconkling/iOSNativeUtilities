@@ -12,39 +12,39 @@ NSUserDefaults *prefs;
 SSZipArchiveANE *ssZipArchiveDelegate;
 
 DEFINE_ANE_FUNCTION(nativeUtilsIsSupported){
-    
+
     BOOL ret = true;
     FREObject retVal;
     FRENewObjectFromBool(ret, &retVal);
-    return retVal;    
+    return retVal;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsLoadSettingDefaults)
 {
 //Code from http://excitabyte.wordpress.com/2009/08/12/keeping-user-defaults-synchronized-with-settings-bundle/
     if(!prefs)
         prefs=[NSUserDefaults standardUserDefaults];
-        
+
         //Determine the path to our Settings.bundle.
         NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
         NSString *settingsBundlePath = [bundlePath stringByAppendingPathComponent:@"Settings.bundle"];
-        
+
         // Load paths to all .plist files from our Settings.bundle into an array.
         NSArray *allPlistFiles = [NSBundle pathsForResourcesOfType:@"plist" inDirectory:settingsBundlePath];
-        
+
         // Put all of the keys and values into one dictionary,
         // which we then register with the defaults.
         NSMutableDictionary *preferencesDictionary = [NSMutableDictionary dictionary];
-        
+
         // Copy the default values loaded from each plist
         // into the system's sharedUserDefaults database.
         NSString *plistFile;
         for (plistFile in allPlistFiles)
         {
-            
+
             // Load our plist files to get our preferences.
             NSDictionary *settingsDictionary = [NSDictionary dictionaryWithContentsOfFile:plistFile];
             NSArray *preferencesArray = [settingsDictionary objectForKey:@"PreferenceSpecifiers"];
-            
+
             // Iterate through the specifiers, and copy the default
             // values into the DB.
             NSDictionary *item;
@@ -52,29 +52,29 @@ DEFINE_ANE_FUNCTION(nativeUtilsLoadSettingDefaults)
             {
                 // Obtain the specifier's key value.
                 NSString *keyValue = [item objectForKey:@"Key"];
-                
+
                 // Using the key, return the DefaultValue if specified in the plist.
                 // Note: We won't know the object type until after loading it.
                 id defaultValue = [item objectForKey:@"DefaultValue"];
-                
+
                 // Some of the items, like groups, will not have a Key, let alone
                 // a default value.  We want to safely ignore these.
                 if (keyValue && defaultValue)
                 {
                     [preferencesDictionary setObject:defaultValue forKey:keyValue];
                 }
-                
+
             }
-            
+
         }
-        
+
         // Ensure the version number is up-to-date, too.
         // This is, incidentally, how you update the value in a Title element.
         NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
         NSString *shortVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
         NSString *versionLabel = [NSString stringWithFormat:@"%@ (%d)", shortVersion, [version intValue]];
         [prefs setObject:versionLabel forKey:@"app_version_number"];
-        
+
         // Now synchronize the user defaults DB in memory
         // with the persistent copy on disk.
         [prefs registerDefaults:preferencesDictionary];
@@ -120,12 +120,12 @@ DEFINE_ANE_FUNCTION(nativeUtilsGetFloat)
     NSString *keyString = nil;
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
-            value=[prefs doubleForKey:keyString];    
-    }    
+            value=[prefs doubleForKey:keyString];
+    }
     FREObject sumToReturn = nil;
     if(value)
     FRENewObjectFromDouble(value, &sumToReturn);
-    
+
     return sumToReturn;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsGetBool)
@@ -138,13 +138,13 @@ DEFINE_ANE_FUNCTION(nativeUtilsGetBool)
     NSString *keyString = nil;
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
-            value=[prefs boolForKey:keyString];    
-    }    
+            value=[prefs boolForKey:keyString];
+    }
     FREObject retBool = nil;
     if(value)
     FRENewObjectFromBool(value, &retBool);
-    
-    return retBool; 
+
+    return retBool;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsGetInteger)
 {
@@ -157,12 +157,12 @@ DEFINE_ANE_FUNCTION(nativeUtilsGetInteger)
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
         if([prefs objectForKey:keyString]!=nil)
-        value=[prefs integerForKey:keyString];    
-    }    
+        value=[prefs integerForKey:keyString];
+    }
     FREObject sumToReturn = nil;
     if(value)
     FRENewObjectFromInt32(value, &sumToReturn);
-    
+
     return sumToReturn;
 }
 
@@ -181,7 +181,7 @@ DEFINE_ANE_FUNCTION(nativeUtilsSetObject)
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
         valueString = [NSString stringWithUTF8String:(char*)valueCString];
         [prefs setObject:valueString forKey:keyString];
-    }  
+    }
     return NULL;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsSetFloat)
@@ -195,8 +195,8 @@ DEFINE_ANE_FUNCTION(nativeUtilsSetFloat)
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
         FREGetObjectAsDouble(argv[1], &value);
-        [prefs setInteger:value forKey:keyString];    
-    }    
+        [prefs setInteger:value forKey:keyString];
+    }
     return NULL;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsSetBool)
@@ -210,8 +210,8 @@ DEFINE_ANE_FUNCTION(nativeUtilsSetBool)
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
         FREGetObjectAsBool(argv[1], &value);
-        [prefs setBool:value forKey:keyString];    
-    }    
+        [prefs setBool:value forKey:keyString];
+    }
     return NULL;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsSetInteger)
@@ -225,8 +225,8 @@ DEFINE_ANE_FUNCTION(nativeUtilsSetInteger)
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
         FREGetObjectAsInt32(argv[1], &value);
-        [prefs setInteger:value forKey:keyString];    
-    }    
+        [prefs setInteger:value forKey:keyString];
+    }
     return NULL;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsNSLog)
@@ -238,8 +238,8 @@ DEFINE_ANE_FUNCTION(nativeUtilsNSLog)
     NSString *keyString = nil;
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
-        NSLog(@"Native utils NSLog: %@",keyString); 
-    }    
+        NSLog(@"Native utils NSLog: %@",keyString);
+    }
     return NULL;
 }
 DEFINE_ANE_FUNCTION(nativeUtilsUnzipFile) {
@@ -270,10 +270,10 @@ DEFINE_ANE_FUNCTION(nativeUtilsUnzipFile) {
         else {
             ssZipArchiveDelegate = [[SSZipArchiveANE alloc] init];
         }
-        
+
         [ssZipArchiveDelegate setContext:ctx];
         [ssZipArchiveDelegate unzipFile:zipPath archivePath:destinationPath];
-        
+
         // [zipPath release];
        // [destinationPath release];
         //[passString release];
@@ -283,62 +283,62 @@ DEFINE_ANE_FUNCTION(nativeUtilsUnzipFile) {
         NSLog(@"file not found");
     }
     FRENewObjectFromBool(ret, &retVal);
-    return retVal;    
-    
+    return retVal;
+
 }
 
 // ContextInitializer()
 //
 // The context initializer is called when the runtime creates the extension context instance.
-void nativeUtilsContextInitializer(void* extData, const uint8_t* ctxType, FREContext ctx, 
-                                       uint32_t* numFunctionsToTest, const FRENamedFunction** functionsToSet) 
+void nativeUtilsContextInitializer(void* extData, const uint8_t* ctxType, FREContext ctx,
+                                       uint32_t* numFunctionsToTest, const FRENamedFunction** functionsToSet)
 {
     //we expose two methods to ActionScript
 	*numFunctionsToTest = 13;
-    
+
 	FRENamedFunction* func = (FRENamedFunction*) malloc(sizeof(FRENamedFunction) * (*numFunctionsToTest));
 	func[0].name = (const uint8_t*)"unzipFile";
 	func[0].functionData = NULL;
-    func[0].function = &nativeUtilsUnzipFile; 
+    func[0].function = &nativeUtilsUnzipFile;
     func[1].name = (const uint8_t*) "nativeUtilsIsSupported";
 	func[1].functionData = NULL;
     func[1].function = &nativeUtilsIsSupported;
     func[2].name = (const uint8_t*) "nativeUtilsSetObject";
 	func[2].functionData = NULL;
-    func[2].function = &nativeUtilsSetObject;  
+    func[2].function = &nativeUtilsSetObject;
     func[3].name = (const uint8_t*) "nativeUtilsSetInteger";
 	func[3].functionData = NULL;
-    func[3].function = &nativeUtilsSetInteger;    
+    func[3].function = &nativeUtilsSetInteger;
     func[4].name = (const uint8_t*) "nativeUtilsSetFloat";
 	func[4].functionData = NULL;
-    func[4].function = &nativeUtilsSetFloat;  
+    func[4].function = &nativeUtilsSetFloat;
     func[5].name = (const uint8_t*) "nativeUtilsSetBool";
 	func[5].functionData = NULL;
-    func[5].function = &nativeUtilsSetBool;    
-    
+    func[5].function = &nativeUtilsSetBool;
+
     func[6].name = (const uint8_t*) "nativeUtilsGetObject";
 	func[6].functionData = NULL;
-    func[6].function = &nativeUtilsGetObject;  
+    func[6].function = &nativeUtilsGetObject;
     func[7].name = (const uint8_t*) "nativeUtilsGetInteger";
 	func[7].functionData = NULL;
-    func[7].function = &nativeUtilsGetInteger;    
+    func[7].function = &nativeUtilsGetInteger;
     func[8].name = (const uint8_t*) "nativeUtilsGetFloat";
 	func[8].functionData = NULL;
-    func[8].function = &nativeUtilsGetFloat;  
+    func[8].function = &nativeUtilsGetFloat;
     func[9].name = (const uint8_t*) "nativeUtilsGetBool";
 	func[9].functionData = NULL;
-    func[9].function = &nativeUtilsGetBool;  
+    func[9].function = &nativeUtilsGetBool;
 	func[10].name = (const uint8_t*) "nativeUtilsSynchronizeSettings";
 	func[10].functionData = NULL;
     func[10].function = &nativeUtilsSynchronizeSettings;
     func[11].name = (const uint8_t*) "nativeUtilsLoadSettingsDefaults";
 	func[11].functionData = NULL;
-    func[11].function = &nativeUtilsLoadSettingDefaults;  
+    func[11].function = &nativeUtilsLoadSettingDefaults;
     func[12].name = (const uint8_t*) "nativeUtilsNSLog";
 	func[12].functionData = NULL;
-    func[12].function = &nativeUtilsNSLog;      
+    func[12].function = &nativeUtilsNSLog;
     *functionsToSet = func;
-	
+
 	g_ctx = ctx;
 }
 
@@ -350,8 +350,8 @@ void nativeUtilsContextInitializer(void* extData, const uint8_t* ctxType, FRECon
 // ContextFinalizer().
 
 void nativeUtilsContextFinalizer(FREContext ctx) {
-    
-        
+
+
     [ssZipArchiveDelegate setContext:NULL];
 	[ssZipArchiveDelegate release];
 	ssZipArchiveDelegate = nil;
@@ -363,20 +363,20 @@ void nativeUtilsContextFinalizer(FREContext ctx) {
 //
 // The extension initializer is called the first time the ActionScript side of the extension
 // calls ExtensionContext.createExtensionContext() for any context.
-void nativeUtilsExtInitializer(void** extDataToSet, FREContextInitializer* ctxInitializerToSet, 
+void nativeUtilsExtInitializer(void** extDataToSet, FREContextInitializer* ctxInitializerToSet,
                                    FREContextFinalizer* ctxFinalizerToSet) {
-    
+
     *extDataToSet = NULL;
     *ctxInitializerToSet = &nativeUtilsContextInitializer;
     *ctxFinalizerToSet = &nativeUtilsContextFinalizer;
-    
+
 }
 
 // ExtFinalizer()
 //
 // The extension finalizer is called when the runtime unloads the extension. However, it is not always called.
 void nativeUtilsExtFinalizer(void* extData) {
-    
+
     return;
 }
 
