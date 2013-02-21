@@ -238,7 +238,7 @@ DEFINE_ANE_FUNCTION(nativeUtilsNSLog)
     NSString *keyString = nil;
     if (FRE_OK == FREGetObjectAsUTF8(argv[0], &keyLength, &keyCString)) {
         keyString = [NSString stringWithUTF8String:(char*)keyCString];
-        NSLog(@"Native utils NSLog: %@",keyString);
+        NSLog(keyString);
     }
     return NULL;
 }
