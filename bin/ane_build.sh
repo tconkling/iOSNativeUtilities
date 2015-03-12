@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-if [ ! -d "$FLEX_HOME" ]; then
-    echo "\$FLEX_HOME is not set"
+if [ ! -d "$AIR_HOME" ]; then
+    echo "\$AIR_HOME is not set"
     exit 1
 fi
 
@@ -22,8 +22,8 @@ mkdir -p ios
 mkdir -p default
 
 # compile NativeUtilsAS.swc
-"$FLEX_HOME"/bin/acompc \
-    +flexlib="$FLEX_HOME/frameworks" \
+"$AIR_HOME"/bin/acompc \
+    +flexlib="$AIR_HOME/frameworks" \
     -compiler.source-path="$AS_SRC" \
     -compiler.debug=false \
     -compiler.accessible=false \
@@ -33,7 +33,7 @@ mkdir -p default
 
 # compile libNativeUtils.a
 xcodebuild -project "$XCODE_SRC/NativeUtils.xcodeproj" \
-    -scheme NativeUtils \
+    -alltargets \
     -configuration Release \
     clean build \
     SYMROOT="$DIST"
@@ -46,7 +46,7 @@ cp "$ETC/library.swf" ios/library.swf
 cp "$ETC/library.swf" default/library.swf
 
 # compiling ane
-"$FLEX_HOME/bin/adt" \
+"$AIR_HOME/bin/adt" \
     -package \
     -target ane \
     NativeUtils.ane "$ETC/extension.xml" \

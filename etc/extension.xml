@@ -9,7 +9,7 @@ source other than Adobe, then your use, modification, or distribution of it requ
 written permission of Adobe.
 
 -->
-<extension xmlns="http://ns.adobe.com/air/extension/3.1">
+<extension xmlns="http://ns.adobe.com/air/extension/3.9">
     <id>pl.mllr.extensions.nativeUtils</id>
     <versionNumber>1</versionNumber>
     <platforms>
@@ -20,8 +20,8 @@ written permission of Adobe.
                 <finalizer>nativeUtilsExtFinalizer</finalizer>
 	        </applicationDeployment>
         </platform>
-          <platform name="default"> 
-              <applicationDeployment/> 
+          <platform name="default">
+              <applicationDeployment/>
           </platform>
           </platforms>
 </extension>
